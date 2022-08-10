@@ -1,0 +1,31 @@
+provider "azurerm" {
+    skip_provider_registration = true
+    version = "~>2.0"
+    features {}
+}
+terraform {
+    backend "azurerm" {
+        resource_group_name = "dhoni"
+        storage_account_name = "terraformteest"
+        container_name = "terraform.tfstate"
+    }
+}
+resource "azurerm_resource_group" "example" {
+    name = "newrg"
+    location = "eastus"
+}
+resource "azurerm_app_service_plan" "example" {
+    name = "testapp"
+    location = azurerm_resource_group.example.location
+    resource_group_name = azurerm_resource_group.example.name
+    sku {
+        tier = "Standard"
+        size = "S1"
+    }
+    }
+resource "azurerm_app_service" "example" {
+    name = "devopsdemo321"
+    resource_group_name = azurerm_resource_group.example.name
+    location = azurerm_resource_group.example.location
+    app_service_plan_id = azurerm_app_service_plan.example.id
+}
